@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html> <title>CS Placement Exam</title>
+    <body>
+        <input type="file" id="textInput" accept=".txt" onchange="readText(this)"/>
+    </body>
+    <script>
+        var reader;
+
+        function readText(p1) {
+            if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+                alert('At least one of the necessary File/FileReader/FileList/Blob APIs is not fully supported by your browser, so I can\'t continue. This application functions best using an up-to-date browser on an up-to-date machine.');
+                return;
+            }
+            reader = new FileReader();
+            if (p1.files && p1.files[0]){
+                reader.onload = function (p2) {
+                    quadseq(p2.target.result);
+                };
+                reader.readAsText(p1.files[0]);
+            }
+        }
+
+        function numberorder(p1,p2) {
+            return p2 - p1;
+        }
+
+        function quadseq(p1){
+            let a1 = p1.split(/\n/);
+            let a2 = [];
+            a1.forEach((el => {
+                if(/^[\d\x20-]+$/.test(el)){
+                    a2.push(el);
+                }
+            }));
+            a1 = [];
+            let i1 = 0;
+            let i2 = 0;
+            while (i1 < a2.length){
+                a1.push(a2[i1].split(' ').filter((el) => /^[\d\x20-]+$/.test(el)).map((el) => parseInt(el)));
+                if (a1[0].length != a1[i1].length){
+                    alert('The numbers you\'ve inputted are formatted in a pattern different from a rectangular grid. I can\'t parse anything else, so I can\'t find quadsequences easily.');
+                    return;
+                }
+                i1++;
+            }
+            i1 = 0;
+            a2 = [];
+            switch (true) {
+                case (a1.length > 3 && a1[0].length > 3) : {
+                    while (i1 + 4 < a1.length) {
+                        while (i2 + 4 < a1[0].length){
+                            a2.push((a1[i1])[i2] * (a1[i1 + 1])[i2 + 1] * (a1[i1 + 2])[i2 + 2] * (a1[i1 + 3])[i2 + 3]);
+                            a2.push((a1[i1])[i2 + 3] * (a1[i1 + 1])[i2 + 2] * (a1[i1 + 2])[i2 + 1] * (a1[i1 + 3])[i2]);
+                            i2++;
+                        }
+                        i2 = 0;
+                        i1++;
+                    }
+                    i1 = 0;
+                }
+                case (a1.length > 3) : {
+                    while (i1 + 4 < a1.length) {
+                        while (i2 < a1[0].length) {
+                            a2.push((a1[i1])[i2] * (a1[i1 + 1])[i2] * (a1[i1 + 2])[i2] * (a1[i1 + 3])[i2]);
+                            i2++;
+                        }
+                        i2 = 0;
+                        i1++;
+                    }
+                    i1 = 0;
+                    if (a1[0].length <= 3) {
+                        break;
+                    }
+                }
+                case (a1[0].length > 3) : {
+                    while (i1 < a1.length) {
+                        while (i2 + 4 < a1[0].length) {
+                            a2.push((a1[i1])[i2] * (a1[i1])[i2 + 1] * (a1[i1])[i2 + 2] * (a1[i1])[i2 + 3]);
+                            i2++;
+                        }
+                        i2 = 0;
+                        i1++;
+                    }
+                    i1 = 0;
+                    break;
+                }
+                default : {
+                    alert('The grid you gave me is too small for quadsequences to exist. Make sure your grid is either four numbers tall or wide, if not both.');
+                    return;
+                }
+            }
+            a2.sort(numberorder);
+            console.log(a2);
+            alert('The biggest quadsequence I could find has a product of ' + a2[0] + '. Please refer to the console for an ordered list of products, from greatest to smallest.');
+        }
+    </script>
+</html>
